@@ -187,7 +187,7 @@ export function createChunks(offsets, chunkSizeBytes) {
 // let {newOffsetsOfFullPackets, offsetOfLastNotFullPacket} = readPcapPacketOffsets(file, 24, 1000000);
 
 
-export async function readPcapPacketOffsets(file, start, length, offsetsBuffer) {
+export async function readPcapPacketOffsets(file, start, length, offsetsBuffer, isLittleEndian, snapshotLength) {
     //const offsetsBuffer = [];
     let offsetOfLastNotFullPacket = null;
 
@@ -217,10 +217,11 @@ export async function readPcapPacketOffsets(file, start, length, offsetsBuffer) 
     while (relativeOffset + PACKET_HEADER_SIZE <= bytesToRead) {
         // Read incl_len (bytes 8-11 of the packet header) from the current relative offset.
         // Assuming little-endian byte order for PCAP headers.
-        const inclLen = dataView.getUint32(relativeOffset + 8, true);
-
+        const inclLen = dataView.getUint32(relativeOffset + 8, isLittleEndian);
         // Calculate the total size of this packet (header + data)
         const totalPacketSize = PACKET_HEADER_SIZE + inclLen;
+        if (totalPacketSize > bytesToRead) throw new Error(`Packet size (${totalPacketSize} bytes) too big. Probably wrong format or little endian.`);
+        if (inclLen > snapshotLength) throw new Error(`Packet header IncLen (${inclLen} bytes) is bigger than global header snapshot length (${snapshotLength})`);
 
         // Check if the entire packet (header + data) fits within the current chunk
         if (relativeOffset + totalPacketSize <= bytesToRead) {

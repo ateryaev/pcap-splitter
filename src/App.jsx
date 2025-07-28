@@ -53,7 +53,7 @@ function App() {
         {currentPage === PAGE_RESULT && <PageResult onError={handleError} file={file} offsets={offsets} pcapHeader={pcapHeader} onBack={goBack} />}
       </div>
       <div className="text-center text-xs text-gray-700">
-        Pcap File Splitter v1.0, github.com
+        Pcap File Splitter v1.0, <a href="https://github.com/ateryaev/pcap-splitter" className='underline' target='blank'>github.com</a>
         <br />
         Developed by Anton Teryaev, 2025
       </div>

@@ -12,20 +12,19 @@ export function PageIndexing({ file, onCancel, onError, onComplete }) {
 
         const runIndexing = async () => {
             let offsets = [];
-            console.log("START indexing file: ", file?.name)
+            console.log("START INDEXING FILE: ", file?.name)
             try {
                 //await wait(1000);
-
                 const pcapHeader = await readPcapGlobalHeader(file);
-                console.log(pcapHeader)
-                const readingLength = 50 * 1024 * 1024;
+                console.log("PCAP HEADER:", pcapHeader)
+                const readingLength = 30 * 1024 * 1024;
                 let readingStart = 24;
-                console.time("INDEXING")
+                console.time("INDEXING TIMER")
                 while (readingStart && isMounted) {
-                    readingStart = await readPcapPacketOffsets(file, readingStart, readingLength, offsets);
+                    readingStart = await readPcapPacketOffsets(file, readingStart, readingLength, offsets, pcapHeader.isLittleEndian, pcapHeader.snapshotLength);
                     setIndexingProgress(Math.floor(100 * readingStart / file.size))
                 }
-                console.timeEnd("INDEXING") // 143,543
+                console.timeEnd("INDEXING TIMER") // 143,543
                 if (isMounted) onComplete(offsets, pcapHeader);
             } catch (err) {
                 isMounted && onError && onError(err.message);
