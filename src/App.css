@@ -1,0 +1,10 @@
+body {
+
+  text-size-adjust: none;
+  background: #bbb;
+  font-family: monospace, Courier, 'Courier New';
+  margin: 0;
+  padding: 0;
+  font-size: 14px;
+  xxline-height: 16px;
+}
